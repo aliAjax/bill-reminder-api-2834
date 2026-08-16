@@ -17,6 +17,9 @@ func NewService(repo Repository) *Service {
 }
 
 func (s *Service) Summary(ctx context.Context) (Summary, error) {
+	if err := ctx.Err(); err != nil {
+		return Summary{}, err
+	}
 	bills, err := s.repo.List(ctx)
 	if err != nil {
 		return Summary{}, err

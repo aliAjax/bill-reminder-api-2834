@@ -16,9 +16,9 @@ func NewRepository(s *storepkg.JSONStore) Repository {
 	return &jsonRepository{store: s}
 }
 
-func (r *jsonRepository) ListUnpaidBetween(_ context.Context, start, end string) ([]bill.Bill, error) {
+func (r *jsonRepository) ListUnpaidBetween(ctx context.Context, start, end string) ([]bill.Bill, error) {
 	var bills []bill.Bill
-	if err := r.store.Read(&bills); err != nil {
+	if err := r.store.Read(ctx, &bills); err != nil {
 		return nil, err
 	}
 

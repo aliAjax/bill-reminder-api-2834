@@ -19,6 +19,9 @@ func NewService(repo Repository) *Service {
 }
 
 func (s *Service) Upcoming(ctx context.Context, days int) (UpcomingResult, error) {
+	if err := ctx.Err(); err != nil {
+		return UpcomingResult{}, err
+	}
 	if days == 0 {
 		days = DefaultUpcomingDays
 	}

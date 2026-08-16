@@ -1,6 +1,7 @@
 package store
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -55,9 +56,21 @@ func NewJSONStore(path string) (*JSONStore, error) {
 	return s, nil
 }
 
-func (s *JSONStore) Read(dst any) error {
+// Read honors ctx so a canceled client request returns before touching the
+// data file. The context is checked both before and after acquiring the lock:
+// the first check aborts requests that were canceled while waiting for the
+// lock, the second aborts requests canceled between acquiring the lock and
+// starting the read.
+func (s *JSONStore) Read(ctx context.Context, dst any) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 	s.mu.RLock()
 	defer s.mu.RUnlock()
+
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 
 	data, err := os.ReadFile(s.path)
 	if err != nil {
@@ -70,10 +83,19 @@ func (s *JSONStore) Read(dst any) error {
 }
 
 // Update performs a read-modify-write operation under one lock so concurrent
-// requests cannot lose writes.
-func (s *JSONStore) Update(dst any, mutate func() error) error {
+// requests cannot lose writes. It honors ctx so a canceled client request
+// aborts before reading or writing the data file; the context is checked
+// before and after acquiring the lock, mirroring Read.
+func (s *JSONStore) Update(ctx context.Context, dst any, mutate func() error) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 
 	data, err := os.ReadFile(s.path)
 	if errors.Is(err, os.ErrNotExist) {

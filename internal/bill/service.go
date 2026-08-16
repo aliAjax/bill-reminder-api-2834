@@ -19,6 +19,9 @@ func NewService(repo Repository) *Service {
 }
 
 func (s *Service) Create(ctx context.Context, input CreateInput) (Bill, error) {
+	if err := ctx.Err(); err != nil {
+		return Bill{}, err
+	}
 	name := strings.TrimSpace(input.Name)
 	if name == "" {
 		return Bill{}, fmt.Errorf("%w: name is required", ErrInvalidInput)

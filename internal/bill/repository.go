@@ -15,24 +15,24 @@ func NewRepository(s *storepkg.JSONStore) Repository {
 	return &jsonRepository{store: s}
 }
 
-func (r *jsonRepository) Create(_ context.Context, item Bill) error {
+func (r *jsonRepository) Create(ctx context.Context, item Bill) error {
 	var bills []Bill
-	return r.store.Update(&bills, func() error {
+	return r.store.Update(ctx, &bills, func() error {
 		bills = append(bills, item)
 		return nil
 	})
 }
 
-func (r *jsonRepository) List(_ context.Context) ([]Bill, error) {
+func (r *jsonRepository) List(ctx context.Context) ([]Bill, error) {
 	var bills []Bill
-	if err := r.store.Read(&bills); err != nil {
+	if err := r.store.Read(ctx, &bills); err != nil {
 		return nil, err
 	}
 	return sortedCopy(bills), nil
 }
 
-func (r *jsonRepository) ListByStatus(_ context.Context, status string) ([]Bill, error) {
-	bills, err := r.List(context.Background())
+func (r *jsonRepository) ListByStatus(ctx context.Context, status string) ([]Bill, error) {
+	bills, err := r.List(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -46,8 +46,8 @@ func (r *jsonRepository) ListByStatus(_ context.Context, status string) ([]Bill,
 	return filtered, nil
 }
 
-func (r *jsonRepository) FindByID(_ context.Context, id string) (Bill, error) {
-	bills, err := r.List(context.Background())
+func (r *jsonRepository) FindByID(ctx context.Context, id string) (Bill, error) {
+	bills, err := r.List(ctx)
 	if err != nil {
 		return Bill{}, err
 	}
@@ -59,9 +59,9 @@ func (r *jsonRepository) FindByID(_ context.Context, id string) (Bill, error) {
 	return Bill{}, ErrNotFound
 }
 
-func (r *jsonRepository) Update(_ context.Context, updated Bill) error {
+func (r *jsonRepository) Update(ctx context.Context, updated Bill) error {
 	var bills []Bill
-	return r.store.Update(&bills, func() error {
+	return r.store.Update(ctx, &bills, func() error {
 		index := -1
 		for i := range bills {
 			if bills[i].ID == updated.ID {
