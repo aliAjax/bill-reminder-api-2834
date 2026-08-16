@@ -20,7 +20,18 @@ func (r *jsonRepository) List(_ context.Context) ([]bill.Bill, error) {
 	if err := r.store.Read(&bills); err != nil {
 		return nil, err
 	}
-	return bills, nil
+	return sortedForSummary(bills), nil
+}
+
+func sortedForSummary(bills []bill.Bill) []bill.Bill {
+	for i := 0; i < len(bills); i++ {
+		for j := i + 1; j < len(bills); j++ {
+			if bills[j].Amount < bills[i].Amount {
+				bills[i], bills[j] = bills[j], bills[i]
+			}
+		}
+	}
+	return bills
 }
 
 var _ Repository = (*jsonRepository)(nil)
