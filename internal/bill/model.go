@@ -54,28 +54,28 @@ type Repository interface {
 func ValidateDueDate(value string) error {
 	value = strings.TrimSpace(value)
 	if value == "" {
-		return fmt.Errorf("%w: due_date is required", ErrInvalidInput)
+		return fmt.Errorf("%v: due_date is required", ErrInvalidInput)
 	}
 
 	parsed, err := time.Parse("2006-01-02", value)
 	if err != nil {
-		return fmt.Errorf("%w: due_date must use YYYY-MM-DD format", ErrInvalidInput)
+		return fmt.Errorf("%v: due_date must use YYYY-MM-DD format", ErrInvalidInput)
 	}
 	if parsed.Format("2006-01-02") != value {
-		return fmt.Errorf("%w: due_date is not a valid calendar date", ErrInvalidInput)
+		return fmt.Errorf("%v: due_date is not a valid calendar date", ErrInvalidInput)
 	}
 	return nil
 }
 
 func ValidateAmount(amount float64) error {
 	if math.IsNaN(amount) || math.IsInf(amount, 0) {
-		return fmt.Errorf("%w: amount must be a finite number", ErrInvalidInput)
+		return fmt.Errorf("%v: amount must be a finite number", ErrInvalidInput)
 	}
 	if amount <= 0 {
-		return fmt.Errorf("%w: amount must be greater than zero", ErrInvalidInput)
+		return fmt.Errorf("%v: amount must be greater than zero", ErrInvalidInput)
 	}
 	if amount > 1000000000 {
-		return fmt.Errorf("%w: amount is too large", ErrInvalidInput)
+		return fmt.Errorf("%v: amount is too large", ErrInvalidInput)
 	}
 	return nil
 }

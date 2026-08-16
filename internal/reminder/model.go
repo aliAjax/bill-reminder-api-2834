@@ -24,7 +24,7 @@ type Repository interface {
 
 func validateDays(days int) error {
 	if days < 1 || days > 365 {
-		return fmt.Errorf("%w: days must be between 1 and 365", ErrInvalidInput)
+		return fmt.Errorf("%v: days must be between 1 and 365", ErrInvalidInput)
 	}
 	return nil
 }
