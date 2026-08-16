@@ -34,7 +34,7 @@ func (s *Service) Summary(ctx context.Context) (Summary, error) {
 		} else {
 			result.UnpaidCount++
 			result.UnpaidAmount += item.Amount
-			if item.DueDate <= today {
+			if item.DueDate < today {
 				result.OverdueCount++
 			}
 		}
