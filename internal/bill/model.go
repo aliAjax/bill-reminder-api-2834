@@ -43,6 +43,10 @@ type UpdateDueDateInput struct {
 	DueDate string
 }
 
+func (b Bill) SortKey() float64 {
+	return b.Amount
+}
+
 type Repository interface {
 	Create(ctx context.Context, bill Bill) error
 	List(ctx context.Context) ([]Bill, error)

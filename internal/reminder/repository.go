@@ -2,7 +2,6 @@ package reminder
 
 import (
 	"context"
-	"sort"
 
 	"bill-reminder-api/internal/bill"
 	storepkg "bill-reminder-api/internal/store"
@@ -29,15 +28,13 @@ func (r *jsonRepository) ListUnpaidBetween(_ context.Context, start, end string)
 		}
 	}
 
-	sort.SliceStable(filtered, func(i, j int) bool {
-		if filtered[i].DueDate != filtered[j].DueDate {
-			return filtered[i].DueDate < filtered[j].DueDate
+	for i := 0; i < len(filtered); i++ {
+		for j := i + 1; j < len(filtered); j++ {
+			if filtered[j].SortKey() < filtered[i].SortKey() {
+				filtered[i], filtered[j] = filtered[j], filtered[i]
+			}
 		}
-		if filtered[i].CreatedAt != filtered[j].CreatedAt {
-			return filtered[i].CreatedAt < filtered[j].CreatedAt
-		}
-		return filtered[i].ID < filtered[j].ID
-	})
+	}
 	return filtered, nil
 }
 
