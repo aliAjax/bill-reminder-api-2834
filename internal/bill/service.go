@@ -19,6 +19,10 @@ func NewService(repo Repository) *Service {
 }
 
 func (s *Service) Create(ctx context.Context, input CreateInput) (Bill, error) {
+	if err := ctx.Err(); err != nil {
+		return Bill{}, err
+	}
+
 	name := strings.TrimSpace(input.Name)
 	if name == "" {
 		return Bill{}, fmt.Errorf("%w: name is required", ErrInvalidInput)
@@ -64,6 +68,10 @@ func (s *Service) Create(ctx context.Context, input CreateInput) (Bill, error) {
 }
 
 func (s *Service) List(ctx context.Context, status string) ([]Bill, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+
 	switch strings.TrimSpace(status) {
 	case "", StatusAll:
 		return s.repo.List(ctx)
@@ -75,6 +83,10 @@ func (s *Service) List(ctx context.Context, status string) ([]Bill, error) {
 }
 
 func (s *Service) MarkPaid(ctx context.Context, id string) (Bill, error) {
+	if err := ctx.Err(); err != nil {
+		return Bill{}, err
+	}
+
 	id = strings.TrimSpace(id)
 	if id == "" {
 		return Bill{}, fmt.Errorf("%w: id is required", ErrInvalidInput)
@@ -99,6 +111,10 @@ func (s *Service) MarkPaid(ctx context.Context, id string) (Bill, error) {
 }
 
 func (s *Service) UpdateDueDate(ctx context.Context, id, dueDate string) (Bill, error) {
+	if err := ctx.Err(); err != nil {
+		return Bill{}, err
+	}
+
 	id = strings.TrimSpace(id)
 	if id == "" {
 		return Bill{}, fmt.Errorf("%w: id is required", ErrInvalidInput)

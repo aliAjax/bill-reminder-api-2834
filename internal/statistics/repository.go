@@ -15,7 +15,11 @@ func NewRepository(s *storepkg.JSONStore) Repository {
 	return &jsonRepository{store: s}
 }
 
-func (r *jsonRepository) List(_ context.Context) ([]bill.Bill, error) {
+func (r *jsonRepository) List(ctx context.Context) ([]bill.Bill, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+
 	var bills []bill.Bill
 	if err := r.store.Read(&bills); err != nil {
 		return nil, err
