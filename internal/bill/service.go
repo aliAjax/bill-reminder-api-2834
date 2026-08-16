@@ -43,7 +43,7 @@ func (s *Service) Create(ctx context.Context, input CreateInput) (Bill, error) {
 
 	id, err := newID()
 	if err != nil {
-		return Bill{}, fmt.Errorf("generate bill id: %v", err)
+		return Bill{}, fmt.Errorf("generate bill id: %w", err)
 	}
 	now := time.Now().UTC().Format(time.RFC3339)
 	item := Bill{
@@ -58,7 +58,7 @@ func (s *Service) Create(ctx context.Context, input CreateInput) (Bill, error) {
 	}
 
 	if err := s.repo.Create(ctx, item); err != nil {
-		return Bill{}, fmt.Errorf("create bill: %v", err)
+		return Bill{}, fmt.Errorf("create bill: %w", err)
 	}
 	return item, nil
 }
@@ -93,7 +93,7 @@ func (s *Service) MarkPaid(ctx context.Context, id string) (Bill, error) {
 	item.UpdatedAt = now
 	item.PaidAt = &now
 	if err := s.repo.Update(ctx, item); err != nil {
-		return Bill{}, fmt.Errorf("mark bill paid: %v", err)
+		return Bill{}, fmt.Errorf("mark bill paid: %w", err)
 	}
 	return item, nil
 }
@@ -114,7 +114,7 @@ func (s *Service) UpdateDueDate(ctx context.Context, id, dueDate string) (Bill, 
 	item.DueDate = strings.TrimSpace(dueDate)
 	item.UpdatedAt = time.Now().UTC().Format(time.RFC3339)
 	if err := s.repo.Update(ctx, item); err != nil {
-		return Bill{}, fmt.Errorf("update due date: %v", err)
+		return Bill{}, fmt.Errorf("update due date: %w", err)
 	}
 	return item, nil
 }

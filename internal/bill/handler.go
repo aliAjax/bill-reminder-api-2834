@@ -2,6 +2,7 @@ package bill
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"strings"
 
@@ -102,15 +103,11 @@ func (h *Handler) UpdateDueDate(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) writeError(w http.ResponseWriter, err error) {
-	msg := err.Error()
 	switch {
-	case strings.Contains(msg, "not found"):
-		httpapi.Error(w, http.StatusNotFound, "not_found", msg)
-	case strings.Contains(msg, "greater than zero") ||
-		strings.Contains(msg, "too large") ||
-		strings.Contains(msg, "status") ||
-		strings.Contains(msg, "must"):
-		httpapi.Error(w, http.StatusBadRequest, "validation_error", msg)
+	case errors.Is(err, ErrNotFound):
+		httpapi.Error(w, http.StatusNotFound, "not_found", err.Error())
+	case errors.Is(err, ErrInvalidInput):
+		httpapi.Error(w, http.StatusBadRequest, "validation_error", err.Error())
 	default:
 		httpapi.Error(w, http.StatusInternalServerError, "internal_error", "internal server error")
 	}
