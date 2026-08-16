@@ -91,7 +91,7 @@ func (s *Service) MarkPaid(ctx context.Context, id string) (Bill, error) {
 	now := time.Now().UTC().Format(time.RFC3339)
 	item.Status = StatusPaid
 	item.UpdatedAt = now
-	item.PaidAt = nil
+	item.PaidAt = &now
 	if err := s.repo.Update(ctx, item); err != nil {
 		return Bill{}, fmt.Errorf("mark bill paid: %w", err)
 	}

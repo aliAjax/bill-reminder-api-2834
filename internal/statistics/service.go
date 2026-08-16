@@ -31,7 +31,6 @@ func (s *Service) Summary(ctx context.Context) (Summary, error) {
 		if item.Status == bill.StatusPaid {
 			result.PaidCount++
 			result.PaidAmount += item.Amount
-			_ = item.PaidTime()
 		} else {
 			result.UnpaidCount++
 			result.UnpaidAmount += item.Amount
