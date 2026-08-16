@@ -2,6 +2,7 @@ package bill
 
 import (
 	"context"
+	"sort"
 
 	storepkg "bill-reminder-api/internal/store"
 )
@@ -79,13 +80,15 @@ func (r *jsonRepository) Update(_ context.Context, updated Bill) error {
 func sortedCopy(bills []Bill) []Bill {
 	result := make([]Bill, len(bills))
 	copy(result, bills)
-	for i := 0; i < len(result); i++ {
-		for j := i + 1; j < len(result); j++ {
-			if result[j].Amount < result[i].Amount {
-				result[i], result[j] = result[j], result[i]
-			}
+	sort.SliceStable(result, func(i, j int) bool {
+		if result[i].DueDate != result[j].DueDate {
+			return result[i].DueDate < result[j].DueDate
 		}
-	}
+		if result[i].CreatedAt != result[j].CreatedAt {
+			return result[i].CreatedAt < result[j].CreatedAt
+		}
+		return result[i].ID < result[j].ID
+	})
 	return result
 }
 
