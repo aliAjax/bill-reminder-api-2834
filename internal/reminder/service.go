@@ -27,8 +27,8 @@ func (s *Service) Upcoming(ctx context.Context, days int) (UpcomingResult, error
 	}
 
 	today := time.Now().UTC()
-	start := today.Format("2006-01-02")
-	end := today.AddDate(0, 0, days-1).Format("2006-01-02")
+	start := today.AddDate(0, 0, 1).Format("2006-01-02")
+	end := today.AddDate(0, 0, days).Format("2006-01-02")
 
 	items, err := s.repo.ListUnpaidBetween(ctx, start, end)
 	if err != nil {
