@@ -43,8 +43,11 @@ type UpdateDueDateInput struct {
 	DueDate string
 }
 
-func (b Bill) SortKey() float64 {
-	return b.Amount
+// SortKey returns the value used to order bills ascending.
+// DueDate is a zero-padded YYYY-MM-DD string, so lexicographic
+// comparison matches chronological order.
+func (b Bill) SortKey() string {
+	return b.DueDate
 }
 
 type Repository interface {
